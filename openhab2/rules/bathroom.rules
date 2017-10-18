@@ -1,0 +1,78 @@
+//import org.openhab.core.library.types.*
+//import org.openhab.core.persistence.*
+//import org.openhab.model.script.actions.*
+
+// import concurrent guard 
+import java.util.concurrent.locks.ReentrantLock
+// create a concurrent guard named "lock"
+var java.util.concurrent.locks.ReentrantLock lock  = new java.util.concurrent.locks.ReentrantLock()
+// Create a boolean variable to indicate if temperature is too high
+var boolean HighTempeOverride = false
+
+ 
+rule "Solar Heater Full-Auto"
+
+// automatically switch on heater when auto mode is enabled
+// But only auto switch off when the temperature is bellow desinated value
+// manual change of the switch will be overrided if the temperature is bellow desinated value 
+when
+	Item BathRM_SolarHeater_Temperature_Set changed
+	or Item BathRM_SolarHeater_Temperature changed
+	or Item BathRM_SolarHeater_Heater changed
+then	
+	lock.lock()
+	try{
+		// Automatically turn on the heater when "Full Auto" switch is "ON"
+		// Automatically turn off the heater when the temperature is too high or the tempe matches the setting
+		if ((BathRM_SolarHeater_Temperature_Set.state > BathRM_SolarHeater_Temperature.state) && (BathRM_SolarHeater_Auto.state==ON))
+		{
+			sendCommand(BathRM_SolarHeater_Heater, ON)
+
+		} else if ((BathRM_SolarHeater_Temperature_Set.state <= BathRM_SolarHeater_Temperature.state) || 
+			  (BathRM_SolarHeater_Temperature.state >= BathRM_SolarHeater_Temperature_Max.state)) {
+
+			sendCommand(BathRM_SolarHeater_Heater, OFF)
+		}
+		
+		if ((BathRM_SolarHeater_WaterLvl.state < 100) && (BathRM_SolarHeater_Temperature.state > BathRM_SolarHeater_Temperature_Max.state)) {
+			HighTempeOverride = true
+			sendCommand(BathRM_SolarHeater_Valve, ON)
+		} else if (BathRM_SolarHeater_Temperature.state < BathRM_SolarHeater_Temperature_Max.state) {
+			HighTempeOverride = false
+		}
+		
+
+	} finally{
+		lock.unlock()
+	}
+
+end
+
+// The same thing as temperature controll but do it for auto fill
+rule "auto fill water"
+when
+        Item BathRM_SolarHeater_WaterLvl changed
+        or Item BathRM_SolarHeater_WaterLvl_Set changed
+	or Item BathRM_SolarHeater_Valve changed
+then
+	// Somehow if do not uses the "lock and try" structure the valve would set to ON before 
+	// set to OFF shown in the log file
+	lock.lock()
+	try{
+        	if ((BathRM_SolarHeater_WaterLvl_Set.state > BathRM_SolarHeater_WaterLvl.state) && 
+		    (BathRM_SolarHeater_Auto.state==ON)) {
+
+                	sendCommand(BathRM_SolarHeater_Valve, ON)
+
+	        } else if (((BathRM_SolarHeater_WaterLvl_Set.state <= BathRM_SolarHeater_WaterLvl.state) && !HighTempeOverride) || 
+		           (BathRM_SolarHeater_WaterLvl.state >= 100)) {
+
+        	        sendCommand(BathRM_SolarHeater_Valve, OFF)
+
+		}
+
+        }
+	} finally{
+		lock.unlock()
+	}
+end

@@ -1,0 +1,16 @@
+// If you wish to use mapping in ../transform/en.map you must install the "Map Transformation" add-on in the paper-UI
+Group Bathroom
+Group BathroomAlarm (Bathroom)
+
+Number BathRM_SolarHeater_Temperature_Set "设定水温[%d °C]" <temprature> (Bathroom)
+Number BathRM_SolarHeater_Temperature "当前水温[%d °C]" <temprature> (Bathroom)
+Number BathRM_SolarHeater_Temperature_Max "自动上水温度[%d °C]" <temprature> (Bathroom)
+Number BathRM_SolarHeater_WaterLvl_Set "设定水位[%d %%]" <cistern> (Bathroom)
+Number BathRM_SolarHeater_WaterLvl "当前水位 [%d %%]" <cistern> (Bathroom)
+Switch BathRM_SolarHeater_Valve  "水阀"  <switch> (Bathroom)
+Switch BathRM_SolarHeater_Heater  "电加热"  <switch> (Bathroom)
+Switch BathRM_SolarHeater_Auto "全自动" <switch> (Bathroom)
+
+Switch BathRM_SolarHeater_Alarm_Switch "热水预约" <switch> (BathroomAlarm)
+Number BathRM_SolarHeater_Alarm_Hour "预约时间-小时 [%d 点]" <clock> (BathroomAlarm)
+Number BathRM_SolarHeater_Alarm_Minute "预约时间-分钟 [%d 分钟]" <clock> (BathroomAlarm)

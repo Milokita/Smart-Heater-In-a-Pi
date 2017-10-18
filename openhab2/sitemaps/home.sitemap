@@ -1,0 +1,26 @@
+sitemap home label="我的家"
+{
+
+ // Showing the status of the SolarHeater
+ Frame label="太阳能状态"{
+    Text item=BathRM_SolarHeater_Temperature label="当前水温" icon="heating" valuecolor=[ <40="blue", <60="green", <=65="orange", >65="red"]
+    Text item=BathRM_SolarHeater_WaterLvl label="当前水位" icon="cistern" valuecolor=[ <=15="red", <=30="orange", <=50="blue", <75="purple", >=75="green"]
+    Switch item=BathRM_SolarHeater_Heater label="电加热器" icon="switch" mappings=[ON="开", OFF="关"]
+    Switch item=BathRM_SolarHeater_Valve label="上水阀" icon="switch" mappings=[ON="开", OFF="关"]
+ }
+
+ Frame label="太阳能控制" {
+    Setpoint item=BathRM_SolarHeater_Temperature_Set label="水温设置" icon="heating"  minValue=0 maxValue=70 step=5 valuecolor=[ <=40="blue", <=50="aqua", <60="green", <=65="orange", >65="red"]
+    Setpoint item=BathRM_SolarHeater_WaterLvl_Set label="水位设置" icon="cistern" minValue=0 maxValue=100 step=10 valuecolor=[ <=15="red", <=30="orange", <=50="blue", <75="purple", >=75="green"]
+    Switch item=BathRM_SolarHeater_Auto label="全自动" icon="switch" mappings=[ON="开", OFF="关"]
+    Text label="高级选项" icon="settings" {
+       Setpoint item=BathRM_SolarHeater_Temperature_Max label="自动上水温度" icon="heating" minValue=50 maxValue=80 step=5 valuecolor=[<60="green", <=70="orange", <=80="red"]
+    }
+    Text label="热水预约" icon="clock" {
+       Switch item=BathRM_SolarHeater_Alarm_Switch label="热水预约" icon="switch"
+       Setpoint item=BathRM_SolarHeater_Alarm_Hour label="小时" icon="clock" minValue=0 maxValue=24 step=1
+       Setpoint item=BathRM_SolarHeater_Alarm_Minute label="分钟" icon="clock" minValue=0 maxValue=60 step=15
+    }    
+ }
+
+}
